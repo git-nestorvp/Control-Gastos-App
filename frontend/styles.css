@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 50%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+input, select, button {
+    margin: 10px;
+    padding: 10px;
+    width: calc(100% - 22px);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #ddd;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+button {
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: darkred;
+}
+
+#btn-descargar {
+    background-color: blue;
+    color: white;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#btn-descargar:hover {
+    background-color: darkblue;
+}
