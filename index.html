@@ -1,43 +1,52 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Finanzas</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Control de Finanzas</h1>
-        
-        <h2>Registro de Ingresos</h2>
-        <input type="text" id="fuente" placeholder="Fuente del ingreso">
-        <input type="number" id="monto-ingreso" placeholder="Monto">
-        <input type="date" id="fecha-ingreso">
-        <button onclick="agregarIngreso()">Agregar Ingreso</button>
-        <ul id="lista-ingresos"></ul>
-        
-        <h2>Registro de Gastos</h2>
-        <input type="text" id="descripcion" placeholder="Descripción del gasto">
-        <input type="number" id="monto" placeholder="Monto">
-        <select id="categoria">
-            <option value="Alimentación">Alimentación</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Entretenimiento">Entretenimiento</option>
-            <option value="Otros">Otros</option>
-        </select>
-        <input type="date" id="fecha-gasto">
-        <button onclick="agregarGasto()">Agregar Gasto</button>
-        <ul id="lista-gastos"></ul>
+// Variables globales
+let ingresos = [];
+let gastos = [];
 
-        <h3>Total Ingresos: S/ <span id="total-ingresos">0.00</span></h3>
-        <h3>Total Gastos: S/ <span id="total-gastos">0.00</span></h3>
-        <h3>Saldo Disponible: S/ <span id="saldo">0.00</span></h3>
+document.addEventListener("DOMContentLoaded", () => {
+    actualizarResumen();
+});
 
-        <button id="btn-descargar" onclick="descargarExcel()">Descargar Reporte Excel</button>
-    </div>
+// Función para agregar un ingreso con manejo de errores
+function agregarIngreso() {
+    try {
+        let fuente = document.getElementById("fuente").value.trim();
+        let monto = parseFloat(document.getElementById("monto-ingreso").value);
+        let fecha = document.getElementById("fecha-ingreso").value;
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+        // Validaciones
+        if (!fuente || isNaN(monto) || monto <= 0 || !fecha) {
+            throw new Error("Por favor, ingresa datos válidos.");
+        }
+
+        ingresos.push({ fuente, monto, fecha });
+        actualizarLista("lista-ingresos", ingresos, true);
+        actualizarResumen();
+
+        limpiarCampos(["fuente", "monto-ingreso", "fecha-ingreso"]);
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Función para agregar un gasto con manejo de errores
+function agregarGasto() {
+    try {
+        let descripcion = document.getElementById("descripcion").value.trim();
+        let monto = parseFloat(document.getElementById("monto").value);
+        let categoria = document.getElementById("categoria").value;
+        let fecha = document.getElementById("fecha-gasto").value;
+
+        // Validaciones
+        if (!descripcion || isNaN(monto) || monto <= 0 || !fecha) {
+            throw new Error("Por favor, ingresa datos válidos.");
+        }
+
+        gastos.push({ descripcion, monto, categoria, fecha });
+        actualizarLista("lista-gastos", gastos, false);
+        actualizarResumen();
+
+        limpiarCampos(["descripcion", "monto", "fecha-gasto"]);
+    } catch (error) {
+        alert(error.message);
+    }
+}
