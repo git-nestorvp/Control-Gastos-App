@@ -1,45 +1,170 @@
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Finanzas</title>
-    <link rel="stylesheet" href="estilos.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Control de Finanzas</h1>
-        
-        <!-- Botón de modo oscuro -->
-        <button id="modo-oscuro-toggle">🌙 Modo Oscuro</button>
+let ingresos = [];
+let gastos = [];
 
-        <h2>Registro de Ingresos</h2>
-        <input type="text" id="fuente" placeholder="Fuente del ingreso">
-        <input type="number" id="monto-ingreso" placeholder="Monto">
-        <input type="date" id="fecha-ingreso">
-        <button onclick="agregarIngreso()">Agregar Ingreso</button>
-        <ul id="lista-ingresos"></ul>
-        
-        <h2>Registro de Gastos</h2>
-        <input type="text" id="descripcion" placeholder="Descripción del gasto">
-        <input type="number" id="monto" placeholder="Monto">
-        <select id="categoria">
-            <option value="Alimentación">Alimentación</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Entretenimiento">Entretenimiento</option>
-            <option value="Otros">Otros</option>
-        </select>
-        <input type="date" id="fecha-gasto">
-        <button onclick="agregarGasto()">Agregar Gasto</button>
-        <ul id="lista-gastos"></ul>
+// Cargar datos desde el localStorage al cargar la página
+document.addEventListener("DOMContentLoaded", cargarDatos);
 
-        <h3>Total Ingresos: S/ <span id="total-ingresos">0.00</span></h3>
-        <h3>Total Gastos: S/ <span id="total-gastos">0.00</span></h3>
-        <h3>Saldo Disponible: S/ <span id="saldo">0.00</span></h3>
+function cargarDatos() {
+    try {
+        let datos = JSON.parse(localStorage.getItem("finanzas"));
+        if (datos) {
+            ingresos = datos.ingresos || [];
+            gastos = datos.gastos || [];
+            actualizarListaIngresos();
+            actualizarListaGastos();
+            actualizarResumen();
+        }
+    } catch (error) {
+        console.error("Error al cargar los datos desde el localStorage:", error);
+    }
+}
 
-        <button id="btn-descargar" onclick="descargarExcel()">Descargar Reporte Excel</button>
-    </div>
+// Función para agregar un ingreso
+function agregarIngreso() {
+    try {
+        let fuente = document.getElementById("fuente").value;
+        let monto = parseFloat(document.getElementById("monto-ingreso").value);
+        let fecha = document.getElementById("fecha-ingreso").value;
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+        // Validación de datos
+        if (!fuente || isNaN(monto) || monto <= 0 || !fecha) {
+            throw new Error("Por favor, ingresa datos válidos.");
+        }
+
+        ingresos.push({ fuente, monto, fecha });
+        actualizarListaIngresos();
+        actualizarResumen();
+        limpiarCamposIngreso();
+        guardarDatos();
+    } catch (error) {
+        alert(error.message); // Muestra un mensaje de error en caso de que algo salga mal
+    }
+}
+
+// Función para agregar un gasto
+function agregarGasto() {
+    try {
+        let descripcion = document.getElementById("descripcion").value;
+        let monto = parseFloat(document.getElementById("monto").value);
+        let categoria = document.getElementById("categoria").value;
+        let fecha = document.getElementById("fecha-gasto").value;
+
+        // Validación de datos
+        if (!descripcion || isNaN(monto) || monto <= 0 || !fecha) {
+            throw new Error("Por favor, ingresa datos válidos.");
+        }
+
+        gastos.push({ descripcion, monto, categoria, fecha });
+        actualizarListaGastos();
+        actualizarResumen();
+        limpiarCamposGasto();
+        guardarDatos();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Función para eliminar un ingreso o gasto
+function eliminarItem(index, tipo) {
+    try {
+        if (tipo === 'ingreso') {
+            ingresos.splice(index, 1);
+            actualizarListaIngresos();
+        } else if (tipo === 'gasto') {
+            gastos.splice(index, 1);
+            actualizarListaGastos();
+        }
+        actualizarResumen();
+        guardarDatos();
+    } catch (error) {
+        alert("Error al eliminar el item. Intenta nuevamente.");
+    }
+}
+
+// Función para actualizar la lista de ingresos
+function actualizarListaIngresos() {
+    let lista = document.getElementById("lista-ingresos");
+    lista.innerHTML = ""; 
+    ingresos.forEach((ingreso, index) => {
+        let listItem = document.createElement("li");
+        listItem.innerHTML = `${ingreso.fecha} - ${ingreso.fuente}: S/ ${ingreso.monto.toFixed(2)} 
+            <button onclick="eliminarItem(${index}, 'ingreso')">X</button>`;
+        lista.appendChild(listItem);
+    });
+}
+
+// Función para actualizar la lista de gastos
+function actualizarListaGastos() {
+    let lista = document.getElementById("lista-gastos");
+    lista.innerHTML = ""; 
+    gastos.forEach((gasto, index) => {
+        let listItem = document.createElement("li");
+        listItem.innerHTML = `${gasto.fecha} - ${gasto.descripcion} (${gasto.categoria}): S/ ${gasto.monto.toFixed(2)} 
+            <button onclick="eliminarItem(${index}, 'gasto')">X</button>`;
+        lista.appendChild(listItem);
+    });
+}
+
+// Función para actualizar el resumen (totales y saldo)
+function actualizarResumen() {
+    const totalIngresos = ingresos.reduce((acc, i) => acc + i.monto, 0);
+    const totalGastos = gastos.reduce((acc, g) => acc + g.monto, 0);
+    
+    document.getElementById("total-ingresos").textContent = totalIngresos.toFixed(2);
+    document.getElementById("total-gastos").textContent = totalGastos.toFixed(2);
+    document.getElementById("saldo").textContent = (totalIngresos - totalGastos).toFixed(2);
+}
+
+// Función para limpiar los campos de ingreso
+function limpiarCamposIngreso() {
+    document.getElementById("fuente").value = "";
+    document.getElementById("monto-ingreso").value = "";
+    document.getElementById("fecha-ingreso").value = "";
+}
+
+// Función para limpiar los campos de gasto
+function limpiarCamposGasto() {
+    document.getElementById("descripcion").value = "";
+    document.getElementById("monto").value = "";
+    document.getElementById("categoria").value = "Alimentación";
+    document.getElementById("fecha-gasto").value = "";
+}
+
+// Función para guardar los datos en localStorage
+function guardarDatos() {
+    try {
+        let datos = { ingresos, gastos };
+        localStorage.setItem("finanzas", JSON.stringify(datos));
+    } catch (error) {
+        console.error("Error al guardar los datos:", error);
+    }
+}
+
+// Función para descargar el reporte en Excel
+function descargarExcel() {
+    try {
+        let wb = XLSX.utils.book_new();
+
+        let wsIngresos = XLSX.utils.json_to_sheet(ingresos.map((i, index) => ({
+            "#": index + 1,
+            "Fecha": i.fecha,
+            "Fuente": i.fuente,
+            "Monto": `S/ ${i.monto.toFixed(2)}`
+        })));
+
+        let wsGastos = XLSX.utils.json_to_sheet(gastos.map((g, index) => ({
+            "#": index + 1,
+            "Fecha": g.fecha,
+            "Descripción": g.descripcion,
+            "Categoría": g.categoria,
+            "Monto": `S/ ${g.monto.toFixed(2)}`
+        })));
+
+        XLSX.utils.book_append_sheet(wb, wsIngresos, "Ingresos");
+        XLSX.utils.book_append_sheet(wb, wsGastos, "Gastos");
+
+        XLSX.writeFile(wb, "Reporte_Finanzas.xlsx");
+    } catch (error) {
+        alert("Error al generar el reporte. Intenta nuevamente.");
+    }
+}
