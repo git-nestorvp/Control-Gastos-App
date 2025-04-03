@@ -1,108 +1,124 @@
-/* General */
+/* Estilo general de la página */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #eef2f7;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
     margin: 0;
     padding: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Contenedor principal */
 .container {
-    width: 90%;
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    width: 80%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Títulos */
+/* Títulos principales */
 h1 {
     text-align: center;
-    color: #2c3e50;
-    font-size: 2.5rem;
-    margin-bottom: 30px;
+    color: #333;
 }
 
 h2 {
-    font-size: 1.6rem;
-    color: #34495e;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 5px;
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: #333;
 }
 
-/* Formularios */
-input[type="text"],
-input[type="number"],
-input[type="date"],
-select {
+/* Estilos para formularios */
+input[type="text"], input[type="number"], input[type="date"], select {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
 }
 
-input:focus,
-select:focus {
-    outline: none;
+input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus {
     border-color: #4CAF50;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
 }
 
-/* Botones */
+/* Botón de acción */
 button {
     background-color: #4CAF50;
     color: white;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 6px;
-    font-size: 1rem;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #43a047;
+    background-color: #45a049;
 }
 
-/* Lista de ingresos y gastos */
+/* Listas de ingresos y gastos */
 ul {
-    list-style: none;
+    list-style-type: none;
     padding: 0;
 }
 
 li {
-    padding: 12px;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    margin-bottom: 8px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+    border-radius: 4px;
 }
 
-/* Totales */
+/* Sección de totales */
 h3 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     margin-top: 20px;
-    color: #2c3e50;
-    border-left: 4px solid #4CAF50;
-    padding-left: 10px;
 }
 
-/* Botón de Excel */
+/* Estilo del botón de descarga */
 #btn-descargar {
-    background-color: #1e88e5;
-    margin-top: 30px;
+    background-color: #2196F3;
 }
 
 #btn-descargar:hover {
-    background-color: #1565c0;
+    background-color: #1976D2;
+}
+
+/* Modo oscuro */
+body.modo-oscuro {
+    background-color: #121212;
+    color: white;
+}
+
+body.modo-oscuro .container {
+    background-color: #333;
+    color: white;
+}
+
+body.modo-oscuro h1, body.modo-oscuro h2, body.modo-oscuro h3 {
+    color: white;
+}
+
+body.modo-oscuro button {
+    background-color: #444;
+    color: white;
+}
+
+body.modo-oscuro button:hover {
+    background-color: #555;
+}
+
+body.modo-oscuro input[type="text"], body.modo-oscuro input[type="number"], body.modo-oscuro input[type="date"], body.modo-oscuro select {
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+}
+
+body.modo-oscuro input[type="text"]:focus, body.modo-oscuro input[type="number"]:focus, body.modo-oscuro input[type="date"]:focus, body.modo-oscuro select:focus {
+    border-color: #4CAF50;
 }
