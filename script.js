@@ -1,103 +1,120 @@
-// Variables globales
 let ingresos = [];
 let gastos = [];
 
-// Función para actualizar el resumen
-function actualizarResumen() {
-    const totalIngresos = ingresos.reduce((total, ingreso) => total + ingreso.monto, 0);
-    const totalGastos = gastos.reduce((total, gasto) => total + gasto.monto, 0);
-    const balance = totalIngresos - totalGastos;
-
-    document.getElementById("total-ingresos").innerText = `Total Ingresos: S/ ${totalIngresos.toFixed(2)}`;
-    document.getElementById("total-gastos").innerText = `Total Gastos: S/ ${totalGastos.toFixed(2)}`;
-    document.getElementById("balance").innerText = `Balance: S/ ${balance.toFixed(2)}`;
-}
-
-// Función para agregar un ingreso
 function agregarIngreso() {
-    try {
-        let fuente = document.getElementById("fuente").value.trim();
-        let monto = parseFloat(document.getElementById("monto-ingreso").value);
-        let fecha = document.getElementById("fecha-ingreso").value;
+    let fuente = document.getElementById("fuente").value;
+    let monto = parseFloat(document.getElementById("monto-ingreso").value);
+    let fecha = document.getElementById("fecha-ingreso").value;
 
-        // Validaciones
-        if (!fuente || isNaN(monto) || monto <= 0 || !fecha) {
-            throw new Error("Por favor, ingresa datos válidos para el ingreso.");
-        }
-
+    if (fuente && !isNaN(monto) && monto > 0 && fecha) {
         ingresos.push({ fuente, monto, fecha });
-        actualizarLista("lista-ingresos", ingresos);
-        actualizarResumen();
-        limpiarCampos(["fuente", "monto-ingreso", "fecha-ingreso"]);
-    } catch (error) {
-        mostrarError(error.message);
+        actualizarListaIngresos();
+        guardarDatos();
     }
 }
 
-// Función para agregar un gasto
 function agregarGasto() {
-    try {
-        let descripcion = document.getElementById("descripcion").value.trim();
-        let monto = parseFloat(document.getElementById("monto").value);
-        let categoria = document.getElementById("categoria").value;
-        let fecha = document.getElementById("fecha-gasto").value;
+    let descripcion = document.getElementById("descripcion").value;
+    let monto = parseFloat(document.getElementById("monto").value);
+    let categoria = document.getElementById("categoria").value;
+    let fecha = document.getElementById("fecha-gasto").value;
 
-        // Validaciones
-        if (!descripcion || isNaN(monto) || monto <= 0 || !fecha) {
-            throw new Error("Por favor, ingresa datos válidos para el gasto.");
-        }
-
+    if (descripcion && !isNaN(monto) && monto > 0 && fecha) {
         gastos.push({ descripcion, monto, categoria, fecha });
-        actualizarLista("lista-gastos", gastos);
-        actualizarResumen();
-        limpiarCampos(["descripcion", "monto", "fecha-gasto", "categoria"]);
-    } catch (error) {
-        mostrarError(error.message);
+        actualizarListaGastos();
+        guardarDatos();
     }
 }
 
-// Función para mostrar errores en la interfaz
-function mostrarError(mensaje) {
-    const mensajeError = document.getElementById("mensaje-error");
-    mensajeError.innerText = mensaje;
-}
+function actualizarListaIngresos() {
+    let lista = document.getElementById("lista-ingresos");
+    lista.innerHTML = "";
+    let totalIngresos = 0;
 
-// Función para limpiar los campos después de agregar un ingreso o gasto
-function limpiarCampos(campos) {
-    campos.forEach(campo => document.getElementById(campo).value = '');
-}
-
-// Función para actualizar la lista en el HTML
-function actualizarLista(idLista, lista) {
-    const listaElement = document.getElementById(idLista);
-    listaElement.innerHTML = '';  // Limpiar la lista
-    lista.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = JSON.stringify(item);
-        listaElement.appendChild(li);
-    });
-}
-
-// Función para exportar el reporte a Excel
-function exportarExcel() {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet([["Fuente", "Monto", "Fecha"]]);
-
-    ingresos.forEach(ingreso => {
-        ws["!ref"] = `A1:C${ingresos.length + 1}`;
-        XLSX.utils.sheet_add_aoa(ws, [[ingreso.fuente, ingreso.monto, ingreso.fecha]], { origin: -1 });
+    ingresos.forEach((ingreso, index) => {
+        let item = document.createElement("li");
+        item.innerHTML = `${ingreso.fecha} - ${ingreso.fuente}: S/ ${ingreso.monto.toFixed(2)}
+            <button onclick="eliminarIngreso(${index})">X</button>`;
+        lista.appendChild(item);
+        totalIngresos += ingreso.monto;
     });
 
-    XLSX.utils.book_append_sheet(wb, ws, "Ingresos");
+    document.getElementById("total-ingresos").textContent = totalIngresos.toFixed(2);
+    actualizarSaldo();
+}
 
-    const wsGastos = XLSX.utils.aoa_to_sheet([["Descripción", "Monto", "Categoría", "Fecha"]]);
-    gastos.forEach(gasto => {
-        wsGastos["!ref"] = `A1:D${gastos.length + 1}`;
-        XLSX.utils.sheet_add_aoa(wsGastos, [[gasto.descripcion, gasto.monto, gasto.categoria, gasto.fecha]], { origin: -1 });
+function actualizarListaGastos() {
+    let lista = document.getElementById("lista-gastos");
+    lista.innerHTML = "";
+    let totalGastos = 0;
+
+    gastos.forEach((gasto, index) => {
+        let item = document.createElement("li");
+        item.innerHTML = `${gasto.fecha} - ${gasto.descripcion} (${gasto.categoria}): S/ ${gasto.monto.toFixed(2)}
+            <button onclick="eliminarGasto(${index})">X</button>`;
+        lista.appendChild(item);
+        totalGastos += gasto.monto;
     });
 
+    document.getElementById("total-gastos").textContent = totalGastos.toFixed(2);
+    actualizarSaldo();
+}
+
+function eliminarIngreso(index) {
+    ingresos.splice(index, 1);
+    actualizarListaIngresos();
+    guardarDatos();
+}
+
+function eliminarGasto(index) {
+    gastos.splice(index, 1);
+    actualizarListaGastos();
+    guardarDatos();
+}
+
+function actualizarSaldo() {
+    let totalIngresos = ingresos.reduce((sum, i) => sum + i.monto, 0);
+    let totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
+    document.getElementById("saldo").textContent = (totalIngresos - totalGastos).toFixed(2);
+}
+
+function guardarDatos() {
+    localStorage.setItem("finanzas", JSON.stringify({ ingresos, gastos }));
+}
+
+function cargarDatos() {
+    let datos = JSON.parse(localStorage.getItem("finanzas"));
+    if (datos) {
+        ingresos = datos.ingresos || [];
+        gastos = datos.gastos || [];
+        actualizarListaIngresos();
+        actualizarListaGastos();
+    }
+}
+
+// Función para descargar el reporte en Excel
+function descargarExcel() {
+    let wb = XLSX.utils.book_new();
+
+    let wsIngresos = XLSX.utils.json_to_sheet(ingresos.map((i, index) => ({
+        "#": index + 1,
+        "Fecha": i.fecha,
+        "Fuente": i.fuente,
+        "Monto": `S/ ${i.monto.toFixed(2)}`
+    })));
+
+    let wsGastos = XLSX.utils.json_to_sheet(gastos.map((g, index) => ({
+        "#": index + 1,
+        "Fecha": g.fecha,
+        "Descripción": g.descripcion,
+        "Categoría": g.categoria,
+        "Monto": `S/ ${g.monto.toFixed(2)}`
+    })));
+
+    XLSX.utils.book_append_sheet(wb, wsIngresos, "Ingresos");
     XLSX.utils.book_append_sheet(wb, wsGastos, "Gastos");
 
-    // Descarga el archivo Excel
-    XLSX.writeFile(wb, "Reporte_Ingresos_Gastos.xlsx");
+    XLSX.writeFile(wb, "Reporte_Finanzas.xlsx");
 }
+
+window.onload = cargarDatos;
