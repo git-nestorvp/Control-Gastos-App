@@ -1,124 +1,108 @@
-/* Estilo general de la página */
+/* General */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #eef2f7;
     margin: 0;
     padding: 0;
-    transition: background-color 0.3s, color 0.3s;
 }
 
+/* Contenedor principal */
 .container {
-    width: 80%;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, color 0.3s;
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* Títulos principales */
+/* Títulos */
 h1 {
     text-align: center;
-    color: #333;
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
 }
 
 h2 {
-    margin-top: 20px;
-    font-size: 1.5rem;
-    color: #333;
+    font-size: 1.6rem;
+    color: #34495e;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 5px;
 }
 
-/* Estilos para formularios */
-input[type="text"], input[type="number"], input[type="date"], select {
+/* Formularios */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
     font-size: 1rem;
+    transition: border-color 0.3s ease;
 }
 
-input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus {
+input:focus,
+select:focus {
+    outline: none;
     border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
 }
 
-/* Botón de acción */
+/* Botones */
 button {
     background-color: #4CAF50;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    border-radius: 6px;
     font-size: 1rem;
-    transition: background-color 0.3s;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #43a047;
 }
 
-/* Listas de ingresos y gastos */
+/* Lista de ingresos y gastos */
 ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
 }
 
 li {
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    margin: 5px 0;
-    border-radius: 4px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Sección de totales */
+/* Totales */
 h3 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin-top: 20px;
+    color: #2c3e50;
+    border-left: 4px solid #4CAF50;
+    padding-left: 10px;
 }
 
-/* Estilo del botón de descarga */
+/* Botón de Excel */
 #btn-descargar {
-    background-color: #2196F3;
+    background-color: #1e88e5;
+    margin-top: 30px;
 }
 
 #btn-descargar:hover {
-    background-color: #1976D2;
-}
-
-/* Modo oscuro */
-body.modo-oscuro {
-    background-color: #121212;
-    color: white;
-}
-
-body.modo-oscuro .container {
-    background-color: #333;
-    color: white;
-}
-
-body.modo-oscuro h1, body.modo-oscuro h2, body.modo-oscuro h3 {
-    color: white;
-}
-
-body.modo-oscuro button {
-    background-color: #444;
-    color: white;
-}
-
-body.modo-oscuro button:hover {
-    background-color: #555;
-}
-
-body.modo-oscuro input[type="text"], body.modo-oscuro input[type="number"], body.modo-oscuro input[type="date"], body.modo-oscuro select {
-    background-color: #444;
-    color: white;
-    border: 1px solid #666;
-}
-
-body.modo-oscuro input[type="text"]:focus, body.modo-oscuro input[type="number"]:focus, body.modo-oscuro input[type="date"]:focus, body.modo-oscuro select:focus {
-    border-color: #4CAF50;
+    background-color: #1565c0;
 }
