@@ -1,11 +1,9 @@
 // Variables globales
-let ingresos = JSON.parse(localStorage.getItem("ingresos")) || [];
-let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
+let ingresos = [];
+let gastos = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     actualizarResumen();
-    actualizarLista("lista-ingresos", ingresos, true);
-    actualizarLista("lista-gastos", gastos, false);
 });
 
 // Función para agregar un ingreso con manejo de errores
@@ -15,25 +13,23 @@ function agregarIngreso() {
         let monto = parseFloat(document.getElementById("monto-ingreso").value);
         let fecha = document.getElementById("fecha-ingreso").value;
 
-        // Limpiar cualquier mensaje de error previo
-        limpiarMensajesError();
+        console.log(`Fuente: ${fuente}, Monto: ${monto}, Fecha: ${fecha}`); // Depuración
 
         // Validaciones
         if (!fuente || isNaN(monto) || monto <= 0 || !fecha) {
-            throw new Error("Por favor, ingresa datos válidos.");
+            mostrarError("Por favor, ingresa datos válidos.");
+            return; // No continuar con la función si hay un error
         }
 
         ingresos.push({ fuente, monto, fecha });
-        localStorage.setItem("ingresos", JSON.stringify(ingresos)); // Guardar en localStorage
         actualizarLista("lista-ingresos", ingresos, true);
         actualizarResumen();
 
         limpiarCampos(["fuente", "monto-ingreso", "fecha-ingreso"]);
+        limpiarError(); // Limpiar el mensaje de error si es válido
     } catch (error) {
-        console.error("Error en agregarIngreso:", error.message);
-        mostrarMensajeError("fuente", error.message);  // Muestra mensaje cerca del campo fuente
-        mostrarMensajeError("monto-ingreso", error.message);  // Muestra mensaje cerca del campo monto
-        mostrarMensajeError("fecha-ingreso", error.message);  // Muestra mensaje cerca del campo fecha
+        console.error("Error en agregarIngreso:", error.message); // Depuración
+        mostrarError(error.message);
     }
 }
 
@@ -45,62 +41,102 @@ function agregarGasto() {
         let categoria = document.getElementById("categoria").value;
         let fecha = document.getElementById("fecha-gasto").value;
 
-        // Limpiar cualquier mensaje de error previo
-        limpiarMensajesError();
+        console.log(`Descripción: ${descripcion}, Monto: ${monto}, Fecha: ${fecha}`); // Depuración
 
         // Validaciones
         if (!descripcion || isNaN(monto) || monto <= 0 || !fecha) {
-            throw new Error("Por favor, ingresa datos válidos.");
+            mostrarError("Por favor, ingresa datos válidos.");
+            return; // No continuar con la función si hay un error
         }
 
         gastos.push({ descripcion, monto, categoria, fecha });
-        localStorage.setItem("gastos", JSON.stringify(gastos)); // Guardar en localStorage
         actualizarLista("lista-gastos", gastos, false);
         actualizarResumen();
 
         limpiarCampos(["descripcion", "monto", "fecha-gasto"]);
+        limpiarError(); // Limpiar el mensaje de error si es válido
     } catch (error) {
-        console.error("Error en agregarGasto:", error.message);
-        mostrarMensajeError("descripcion", error.message);
-        mostrarMensajeError("monto", error.message);
-        mostrarMensajeError("fecha-gasto", error.message);
+        console.error("Error en agregarGasto:", error.message); // Depuración
+        mostrarError(error.message);
     }
 }
 
-// Función para mostrar el mensaje de error cerca de un campo
-function mostrarMensajeError(campoId, mensaje) {
-    const campo = document.getElementById(campoId);
-    const errorDiv = document.createElement("div");
-    errorDiv.classList.add("error");
-    errorDiv.textContent = mensaje;
-    campo.parentElement.appendChild(errorDiv);
+// Función para mostrar el mensaje de error en el DOM
+function mostrarError(mensaje) {
+    // Verificar si ya existe un mensaje de error visible
+    const mensajeError = document.getElementById("mensaje-error");
+    if (mensajeError) {
+        mensajeError.textContent = mensaje; // Actualizar el mensaje de error
+    } else {
+        // Si no existe el mensaje de error, lo creamos
+        const errorDiv = document.createElement("div");
+        errorDiv.id = "mensaje-error";
+        errorDiv.style.color = "red";
+        errorDiv.textContent = mensaje;
+        document.body.appendChild(errorDiv); // O donde prefieras mostrar el mensaje
+    }
 }
 
-// Función para limpiar los mensajes de error
-function limpiarMensajesError() {
-    const mensajes = document.querySelectorAll(".error");
-    mensajes.forEach(mensaje => mensaje.remove());
+// Función para limpiar el mensaje de error cuando la validación es correcta
+function limpiarError() {
+    const mensajeError = document.getElementById("mensaje-error");
+    if (mensajeError) {
+        mensajeError.remove(); // Elimina el mensaje de error del DOM
+    }
 }
 
-// Función para actualizar las listas
-function actualizarLista(idLista, lista, esIngreso) {
-    const listaElement = document.getElementById(idLista);
-    listaElement.innerHTML = ""; // Limpiar la lista actual
+// Función para actualizar la lista de ingresos y gastos
+function actualizarLista(elementoId, lista, esIngreso) {
+    let listaElement = document.getElementById(elementoId);
+    listaElement.innerHTML = ""; // Limpiar lista antes de actualizar
 
     lista.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${esIngreso ? "Ingreso" : "Gasto"} ${index + 1}: ${item.descripcion || item.fuente} - $${item.monto} (${item.fecha})`;
+        let li = document.createElement("li");
+        if (esIngreso) {
+            li.textContent = `Fuente: ${item.fuente}, Monto: S/${item.monto}, Fecha: ${item.fecha}`;
+        } else {
+            li.textContent = `Descripción: ${item.descripcion}, Monto: S/${item.monto}, Categoría: ${item.categoria}, Fecha: ${item.fecha}`;
+        }
         listaElement.appendChild(li);
     });
 }
 
-// Función para actualizar el resumen
+// Función para actualizar el resumen de ingresos y gastos
 function actualizarResumen() {
-    const totalIngresos = ingresos.reduce((acc, item) => acc + item.monto, 0);
-    const totalGastos = gastos.reduce((acc, item) => acc + item.monto, 0);
-    const saldo = totalIngresos - totalGastos;
+    let totalIngresos = ingresos.reduce((total, item) => total + item.monto, 0);
+    let totalGastos = gastos.reduce((total, item) => total + item.monto, 0);
+    let balance = totalIngresos - totalGastos;
 
-    document.getElementById("total-ingresos").textContent = `Total Ingresos: $${totalIngresos}`;
-    document.getElementById("total-gastos").textContent = `Total Gastos: $${totalGastos}`;
-    document.getElementById("saldo").textContent = `Saldo: $${saldo}`;
+    document.getElementById("total-ingresos").textContent = `Total Ingresos: S/${totalIngresos}`;
+    document.getElementById("total-gastos").textContent = `Total Gastos: S/${totalGastos}`;
+    document.getElementById("balance").textContent = `Balance: S/${balance}`;
+}
+
+// Función para limpiar los campos después de agregar
+function limpiarCampos(campos) {
+    campos.forEach((campo) => {
+        document.getElementById(campo).value = "";
+    });
+}
+
+// Función para exportar los datos a Excel
+function exportarExcel() {
+    // Crear la tabla para exportar
+    let tabla = "<table border='1'><tr><th>Fuente</th><th>Monto</th><th>Fecha</th></tr>";
+
+    ingresos.forEach((ingreso) => {
+        tabla += `<tr><td>${ingreso.fuente}</td><td>S/${ingreso.monto}</td><td>${ingreso.fecha}</td></tr>`;
+    });
+
+    tabla += "</table>";
+
+    // Crear un enlace temporal para descargar el archivo Excel
+    let enlace = document.createElement("a");
+    let blob = new Blob([tabla], { type: "application/vnd.ms-excel" });
+    let url = URL.createObjectURL(blob);
+
+    enlace.href = url;
+    enlace.download = "reporte_ingresos.xls"; // Nombre del archivo
+    enlace.click(); // Disparar la descarga
+    URL.revokeObjectURL(url); // Revocar el URL después de la descarga
 }
