@@ -13,6 +13,8 @@ function agregarIngreso() {
         let monto = parseFloat(document.getElementById("monto-ingreso").value);
         let fecha = document.getElementById("fecha-ingreso").value;
 
+        console.log(`Fuente: ${fuente}, Monto: ${monto}, Fecha: ${fecha}`); // Depuración
+
         // Validaciones
         if (!fuente || isNaN(monto) || monto <= 0 || !fecha) {
             throw new Error("Por favor, ingresa datos válidos.");
@@ -24,6 +26,7 @@ function agregarIngreso() {
 
         limpiarCampos(["fuente", "monto-ingreso", "fecha-ingreso"]);
     } catch (error) {
+        console.error("Error en agregarIngreso:", error.message); // Depuración
         alert(error.message);
     }
 }
@@ -36,6 +39,8 @@ function agregarGasto() {
         let categoria = document.getElementById("categoria").value;
         let fecha = document.getElementById("fecha-gasto").value;
 
+        console.log(`Descripción: ${descripcion}, Monto: ${monto}, Fecha: ${fecha}`); // Depuración
+
         // Validaciones
         if (!descripcion || isNaN(monto) || monto <= 0 || !fecha) {
             throw new Error("Por favor, ingresa datos válidos.");
@@ -47,6 +52,7 @@ function agregarGasto() {
 
         limpiarCampos(["descripcion", "monto", "fecha-gasto"]);
     } catch (error) {
+        console.error("Error en agregarGasto:", error.message); // Depuración
         alert(error.message);
     }
 }
