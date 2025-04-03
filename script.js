@@ -101,4 +101,3 @@ function exportarExcel() {
     // Descarga el archivo Excel
     XLSX.writeFile(wb, "Reporte_Ingresos_Gastos.xlsx");
 }
-
