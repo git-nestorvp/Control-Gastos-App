@@ -143,28 +143,34 @@ function guardarDatos() {
 // Función para descargar el reporte en Excel
 function descargarExcel() {
     try {
-        let wb = XLSX.utils.book_new();
+        // Recolectar datos de ingresos y gastos
+        const ingresos = obtenerDatosIngresos();
+        const gastos = obtenerDatosGastos();
 
-        let wsIngresos = XLSX.utils.json_to_sheet(ingresos.map((i, index) => ({
-            "#": index + 1,
-            "Fecha": i.fecha,
-            "Fuente": i.fuente,
-            "Monto": `S/ ${i.monto.toFixed(2)}`
-        })));
+        // Verificar si los datos existen
+        if (!ingresos.length && !gastos.length) {
+            throw new Error('No hay datos para generar el reporte');
+        }
 
-        let wsGastos = XLSX.utils.json_to_sheet(gastos.map((g, index) => ({
-            "#": index + 1,
-            "Fecha": g.fecha,
-            "Descripción": g.descripcion,
-            "Categoría": g.categoria,
-            "Monto": `S/ ${g.monto.toFixed(2)}`
-        })));
+        // Crear una nueva hoja de trabajo para el reporte
+        const wb = XLSX.utils.book_new();
 
-        XLSX.utils.book_append_sheet(wb, wsIngresos, "Ingresos");
-        XLSX.utils.book_append_sheet(wb, wsGastos, "Gastos");
+        // Crear las hojas para ingresos y gastos
+        const wsIngresos = XLSX.utils.json_to_sheet(ingresos);
+        const wsGastos = XLSX.utils.json_to_sheet(gastos);
 
-        XLSX.writeFile(wb, "Reporte_Finanzas.xlsx");
+        // Agregar las hojas al libro de trabajo
+        XLSX.utils.book_append_sheet(wb, wsIngresos, 'Ingresos');
+        XLSX.utils.book_append_sheet(wb, wsGastos, 'Gastos');
+
+        // Descargar el archivo Excel
+        XLSX.writeFile(wb, 'Reporte_Financiero.xlsx');
+
+        // Mensaje de éxito
+        alert('Reporte generado correctamente');
     } catch (error) {
-        alert("Error al generar el reporte. Intenta nuevamente.");
+        // Mostrar un mensaje de error si algo sale mal
+        console.error(error); // Para depuración
+        alert('Error al generar reporte. Intenta nuevamente');
     }
 }
