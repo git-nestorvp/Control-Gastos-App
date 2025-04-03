@@ -1,80 +1,42 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Ingresos y Gastos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .formulario {
-            margin-bottom: 20px;
-        }
-        #mensaje-error {
-            color: red;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        button {
-            margin-top: 10px;
-        }
-    </style>
+    <title>Control de Finanzas</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Gestión de Ingresos y Gastos</h1>
+    <div class="container">
+        <h1>Control de Finanzas</h1>
+        
+        <h2>Registro de Ingresos</h2>
+        <input type="text" id="fuente" placeholder="Fuente del ingreso">
+        <input type="number" id="monto-ingreso" placeholder="Monto">
+        <input type="date" id="fecha-ingreso">
+        <button onclick="agregarIngreso()">Agregar Ingreso</button>
+        <ul id="lista-ingresos"></ul>
+        
+        <h2>Registro de Gastos</h2>
+        <input type="text" id="descripcion" placeholder="Descripción del gasto">
+        <input type="number" id="monto" placeholder="Monto">
+        <select id="categoria">
+            <option value="Alimentación">Alimentación</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Entretenimiento">Entretenimiento</option>
+            <option value="Otros">Otros</option>
+        </select>
+        <input type="date" id="fecha-gasto">
+        <button onclick="agregarGasto()">Agregar Gasto</button>
+        <ul id="lista-gastos"></ul>
 
-    <!-- Mensaje de error -->
-    <div id="mensaje-error"></div>
+        <h3>Total Ingresos: S/ <span id="total-ingresos">0.00</span></h3>
+        <h3>Total Gastos: S/ <span id="total-gastos">0.00</span></h3>
+        <h3>Saldo Disponible: S/ <span id="saldo">0.00</span></h3>
 
-    <!-- Formulario de Ingreso -->
-    <div class="formulario">
-        <h3>Agregar Ingreso</h3>
-        <label for="fuente">Fuente: </label><input type="text" id="fuente"><br>
-        <label for="monto-ingreso">Monto: </label><input type="number" id="monto-ingreso"><br>
-        <label for="fecha-ingreso">Fecha: </label><input type="date" id="fecha-ingreso"><br>
-        <button type="button" onclick="agregarIngreso()">Agregar Ingreso</button>
+        <button id="btn-descargar" onclick="descargarExcel()">Descargar Reporte Excel</button>
     </div>
 
-    <!-- Formulario de Gasto -->
-    <div class="formulario">
-        <h3>Agregar Gasto</h3>
-        <label for="descripcion">Descripción: </label><input type="text" id="descripcion"><br>
-        <label for="monto">Monto: </label><input type="number" id="monto"><br>
-        <label for="categoria">Categoría: </label><input type="text" id="categoria"><br>
-        <label for="fecha-gasto">Fecha: </label><input type="date" id="fecha-gasto"><br>
-        <button type="button" onclick="agregarGasto()">Agregar Gasto</button>
-    </div>
-
-    <!-- Resumen -->
-    <h3>Resumen</h3>
-    <div id="total-ingresos">Total Ingresos: S/ 0.00</div>
-    <div id="total-gastos">Total Gastos: S/ 0.00</div>
-    <div id="balance">Balance: S/ 0.00</div>
-
-    <!-- Listas de Ingresos y Gastos -->
-    <h3>Lista de Ingresos</h3>
-    <ul id="lista-ingresos"></ul>
-
-    <h3>Lista de Gastos</h3>
-    <ul id="lista-gastos"></ul>
-
-    <!-- Descargar Reporte -->
-    <h3>Descargar Reporte Excel</h3>
-    <button onclick="exportarExcel()">Descargar Reporte Excel</button>
-
-    <script src="app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
